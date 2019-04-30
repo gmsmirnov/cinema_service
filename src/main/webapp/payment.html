@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Cinema payment</title>
+</head>
+
+<body>
+<!-- Optional JavaScript -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+   function getPlace() {
+       var place;
+       $.ajax({
+           url : "./ticket",
+           method : "get",
+           complete : function(data) {
+               place = JSON.parse(data.responseText);
+               var title = document.getElementById("title");
+               var result = "Вы выбрали ряд " + place[0].row + " место " + place[0].number + ". Цена " + place[0].price + ".";
+               title.innerHTML = result;
+           }
+       });
+   }
+
+    function getTicket() {
+        var name;
+        var phone;
+        $.ajax({
+            url : "./ticket",
+            method : "post",
+            data: {
+                name : $("#name").val(),
+                phone : $("#phone").val()
+            },
+            complete : function(data) {
+                if (validate()) {
+                    window.location.href = "cinema.html";
+                }
+            }
+        });
+    }
+
+   /**
+    * Validates if "name" or "phone" are empty and alerts.
+    *
+    * @returns {boolean} true if there is no one of those fields is empty.
+    */
+   function validate() {
+       var result = true;
+       if (document.getElementById("name").value == '') {
+           alert("Please correct name.");
+           result = false;
+       } else if (document.getElementById("phone").value == '') {
+           alert("Please correct phone.");
+           result = false;
+       }
+       return result;
+   }
+
+</script>
+
+<div class="container">
+    <div class="row pt-3">
+        <script>getPlace()</script>
+        <h3 id="title">
+        </h3>
+    </div>
+    <div class="row">
+        <form>
+            <div class="form-group">
+                <label for="name">ФИО</label>
+                <input type="text" class="form-control" id="name" placeholder="ФИО">
+            </div>
+            <div class="form-group">
+                <label for="phone">Номер телефона</label>
+                <input type="text" class="form-control" id="phone" placeholder="Номер телефона">
+            </div>
+            <button type="button" class="btn btn-success" onclick="getTicket()">Оплатить</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

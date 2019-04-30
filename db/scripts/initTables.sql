@@ -1,0 +1,9 @@
+insert into hall (row, number, isEmpty, price) values ('1', '1', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('1', '2', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('1', '3', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('2', '1', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('2', '2', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('2', '3', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('3', '1', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('3', '2', 'true', 500);
+insert into hall (row, number, isEmpty, price) values ('3', '3', 'true', 500);

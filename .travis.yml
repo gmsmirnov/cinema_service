@@ -32,4 +32,5 @@ env:
 services:
 - postgresql
 before_install:
-- psql -c "CREATE DATABASE test_db;" -U postgres
+- psql -c "CREATE DATABASE cinema;" -U postgres
+- psql -c "CREATE DATABASE cinema_test;" -U postgres

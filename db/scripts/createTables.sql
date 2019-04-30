@@ -1,23 +1,21 @@
 -- main tables
 
-create table if not exists users (
+create table if not exists hall (
 	id serial primary key,
-	login varchar(30),
-	email varchar(50),
-	password varchar(30),
-	country varchar(30),
-	city varchar(30)
+	row int,
+	number int,
+	isEmpty boolean,
+	price int
 );
 
-create table if not exists roles (
+create table if not exists accounts (
 	id serial primary key,
-	role varchar(30)
+	name varchar(30),
+	phone varchar (30)
 );
 
---help tables
-
-create table if not exists users_roles (
+create table if not exists tickets (
 	id serial primary key,
-	user_id int references users(id),
-	role_id int references roles(id)
+	account_id int references accounts(id),
+	place_id int references hall(id)
 );

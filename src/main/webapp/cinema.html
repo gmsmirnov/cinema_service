@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Cinema service</title>
+</head>
+
+<body>
+<!-- Optional JavaScript -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<!-- Popper.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<!-- AJAX -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+    /**
+     * F5 - reloads page and current table.
+     */
+    $(
+        $.ajax("./places", {
+            method : "get",
+            complete : function(data) {
+                console.log(JSON.parse(data.responseText));
+                var result =
+                    "<thead>" +
+                    "<tr>" +
+                    "<th style=\"width: 120px;\">Ряд / Место</th>" +
+                    "<th>1</th>" +
+                    "<th>2</th>" +
+                    "<th>3</th>" +
+                    "</tr>" +
+                    "</thead>" +
+                    "<tbody>";
+                var places = JSON.parse(data.responseText);
+                var row = 0;
+                for (var index = 0; index < places.length; index++) {
+                    if (row != places[index].row) {
+                        row++;
+                        result += "<tr>" +
+                            "<th>" + row + "</th>"
+                    }
+                    if (places[index].empty == true) {
+                        result += "<td bgcolor=\"#adff2f\"><input type=\"radio\" name=\"place\"  value=" + places[index].row + places[index].number + "> Ряд " + places[index].row + ", Место " + places[index].number + "</td>";
+                    } else {
+                        result += "<td bgcolor=\"#f08080\"><input type=\"radio\" name=\"place\"  value=" + places[index].row + places[index].number + " disabled> Ряд " + places[index].row + ", Место " + places[index].number + "</td>";
+                    }
+                    if (index + 1 < places.length) {
+                        if (places[index].row != places[index + 1].row) {
+                            result += "</tr>";
+                        }
+                    }
+                }
+                result += "</tbody>";
+                var table = document.getElementById("hall");
+                table.innerHTML = result;
+            }
+        })
+    );
+
+    /**
+     * Gets checked place number (two digit value).
+     * @returns the checked place number.
+     */
+    function getChecked() {
+        var result;
+        var table = document.getElementById("hall");
+        var cells = table.getElementsByTagName("td");
+        for (var i = 0; i < cells.length; i++) {
+            if (cells[i].getElementsByTagName("input")[0].checked) {
+                result = cells[i].getElementsByTagName("input")[0].getAttribute("value");
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * After choosing the place, sends request to DB and forwards to the payment page.
+     */
+    function pay() {
+        var place = getChecked();
+        if (place != undefined) {
+            $.ajax("./booking", {
+                method : "post",
+                data: { place: place },
+                complete : function(data) {
+                    window.location.href = "payment.html";
+                }
+            })
+        } else {
+            alert("Please, choose the place first.");
+        }
+    }
+</script>
+
+<div class="container">
+    <div class="row pt-3">
+        <h4>
+            Бронирование мест на сеанс
+        </h4>
+        <table class="table table-bordered" id="hall" >
+            <thead>
+            <tr>
+                <th style="width: 120px;">Ряд / Место</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>1</th>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="11"> Ряд 1, Место 1</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="12"> Ряд 1, Место 2</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="13"> Ряд 1, Место 3</td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="21"> Ряд 2, Место 1</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="22"> Ряд 2, Место 2</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="23"> Ряд 2, Место 3</td>
+            </tr>
+            <tr>
+                <th>3</th>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="31"> Ряд 3, Место 1</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="32"> Ряд 3, Место 2</td>
+                <td bgcolor="#adff2f"><input type="radio" name="place" value="33"> Ряд 3, Место 3</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <script type="text/javascript">
+            var timerId = setTimeout(function updateHall() {
+                var check = getChecked();
+                $.ajax("./places", {
+                    method : "get",
+                    complete : function(data) {
+                        console.log(JSON.parse(data.responseText));
+                        var result =
+                            "<thead>" +
+                            "<tr>" +
+                            "<th style=\"width: 120px;\">Ряд / Место</th>" +
+                            "<th>1</th>" +
+                            "<th>2</th>" +
+                            "<th>3</th>" +
+                            "</tr>" +
+                            "</thead>" +
+                            "<tbody>";
+                        var places = JSON.parse(data.responseText);
+                        var row = 0;
+                        for (var index = 0; index < places.length; index++) {
+                            if (row != places[index].row) {
+                                row++;
+                                result += "<tr>" +
+                                    "<th>" + row + "</th>"
+                            }
+                            if (places[index].empty == true) {
+                                result += "<td bgcolor=\"#adff2f\"><input type=\"radio\" name=\"place\"  value=" + places[index].row + places[index].number;
+                                    var value = "" + places[index].row + places[index].number;
+                                    if (value == check) {
+                                        result += " checked";
+                                    }
+                                result += "> Ряд " + places[index].row + ", Место " + places[index].number + "</td>";
+                            } else {
+                                result += "<td bgcolor=\"#f08080\"><input type=\"radio\" name=\"place\"  value=" + places[index].row + places[index].number + " disabled> Ряд " + places[index].row + ", Место " + places[index].number + "</td>";
+                            }
+                            if (index + 1 < places.length) {
+                                if (places[index].row != places[index + 1].row) {
+                                    result += "</tr>";
+                                }
+                            }
+                        }
+                        result += "</tbody>";
+                        var table = document.getElementById("hall");
+                        table.innerHTML = result;
+                    }
+                });
+                timerId = setTimeout(updateHall, 1000);
+            }, 1000);
+        </script>
+    </div>
+    <div class="row float-right">
+        <button type="button" class="btn btn-success" onclick="pay()">Оплатить</button>
+    </div>
+</div>
+</body>
+</html>
