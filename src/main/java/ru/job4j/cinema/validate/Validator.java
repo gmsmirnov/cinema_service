@@ -1,5 +1,6 @@
 package ru.job4j.cinema.validate;
 
+import ru.job4j.cinema.dao.exception.business.AlreadyOccupiedPlaceException;
 import ru.job4j.cinema.dao.exception.business.NoSuchModelException;
 import ru.job4j.cinema.dao.exception.business.NullArgumentException;
 import ru.job4j.cinema.dao.exception.business.WrongArgumentException;
@@ -122,6 +123,7 @@ public interface Validator {
      * @throws NullArgumentException if the specified param is null.
      * @throws WrongArgumentException if the place is out of the hall.
      * @throws DaoSystemException if SQLException occurs.
+     * @throws AlreadyOccupiedPlaceException if the specified place is busy.
      */
-    void createTicket(Ticket ticket) throws NullArgumentException, WrongArgumentException, DaoSystemException;
+    void createTicket(Ticket ticket) throws NullArgumentException, WrongArgumentException, DaoSystemException, AlreadyOccupiedPlaceException;
 }

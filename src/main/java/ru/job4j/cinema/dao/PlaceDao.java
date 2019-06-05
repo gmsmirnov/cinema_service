@@ -1,5 +1,6 @@
 package ru.job4j.cinema.dao;
 
+import ru.job4j.cinema.dao.exception.business.AlreadyOccupiedPlaceException;
 import ru.job4j.cinema.dao.exception.system.DaoSystemException;
 import ru.job4j.cinema.model.Person;
 import ru.job4j.cinema.model.Place;
@@ -96,8 +97,9 @@ public interface PlaceDao {
      * @param place - the specified place.
      * @param person - the specified person.
      * @throws DaoSystemException if SQL Exception occurs.
+     * @throws AlreadyOccupiedPlaceException if the specified place is busy.
      */
-    void createTicket(Place place, Person person) throws DaoSystemException;
+    void createTicket(Place place, Person person) throws DaoSystemException, AlreadyOccupiedPlaceException;
 
     /**
      * Checks existence of account for the specified person.

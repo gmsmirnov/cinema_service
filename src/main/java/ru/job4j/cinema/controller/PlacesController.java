@@ -63,17 +63,7 @@ public class PlacesController extends HttpServlet {
         resp.setContentType("text/json");
         ObjectMapper mapper = new ObjectMapper();
         PrintWriter writer = new PrintWriter(resp.getOutputStream());
-        StringBuilder result = new StringBuilder("[");
-        int index = 0;
-        for (Place place : places) {
-            result.append(mapper.writeValueAsString(place));
-            if (places.size() - index > 1) {
-                result.append(",");
-            }
-            index++;
-        }
-        result.append("]");
-        writer.append(result.toString());
+        writer.append(mapper.writeValueAsString(places));
         writer.flush();
     }
 }

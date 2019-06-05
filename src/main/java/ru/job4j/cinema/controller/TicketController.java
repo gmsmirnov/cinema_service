@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.job4j.cinema.Constants;
+import ru.job4j.cinema.dao.exception.business.AlreadyOccupiedPlaceException;
 import ru.job4j.cinema.dao.exception.business.NullArgumentException;
 import ru.job4j.cinema.dao.exception.business.WrongArgumentException;
 import ru.job4j.cinema.dao.exception.system.DaoSystemException;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Tickets controller. Actualize ticket's price and puts ticket into database.
@@ -77,6 +80,8 @@ public class TicketController extends HttpServlet {
             TicketController.LOG.error("Wrong argument.", e);
         } catch (DaoSystemException e) {
             TicketController.LOG.error("SQL error occurs.", e);
+        } catch (AlreadyOccupiedPlaceException e) {
+            TicketController.LOG.error("The place is already occupied", e);
         }
     }
 
@@ -91,10 +96,9 @@ public class TicketController extends HttpServlet {
         resp.setContentType("text/json");
         ObjectMapper mapper = new ObjectMapper();
         PrintWriter writer = new PrintWriter(resp.getOutputStream());
-        StringBuilder result = new StringBuilder("[");
-        result.append(mapper.writeValueAsString(place));
-        result.append("]");
-        writer.append(result.toString());
+        List<Place> jsonPlaces = new LinkedList<Place>();
+        jsonPlaces.add(place);
+        writer.append(mapper.writeValueAsString(jsonPlaces));
         writer.flush();
     }
 

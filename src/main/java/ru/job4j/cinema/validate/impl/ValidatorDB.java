@@ -1,5 +1,6 @@
 package ru.job4j.cinema.validate.impl;
 
+import ru.job4j.cinema.dao.exception.business.AlreadyOccupiedPlaceException;
 import ru.job4j.cinema.dao.exception.business.NoSuchModelException;
 import ru.job4j.cinema.dao.exception.business.NullArgumentException;
 import ru.job4j.cinema.dao.exception.business.WrongArgumentException;
@@ -16,7 +17,7 @@ import java.util.List;
  * A validate layer implementation for data base. Verify params and returned values between view-layer and storage-layer.
  *
  * @author Gregory Smirnov (artress@ngs.ru)
- * @version 1.1
+ * @version 1.2
  * @since 29/04/2019
  */
 public class ValidatorDB implements Validator {
@@ -241,8 +242,9 @@ public class ValidatorDB implements Validator {
      * @throws NullArgumentException if the specified param is null.
      * @throws WrongArgumentException if the place is out of the hall.
      * @throws DaoSystemException if SQLException occurs.
+     * @throws AlreadyOccupiedPlaceException if the specified place is busy.
      */
-    public void createTicket(Ticket ticket) throws NullArgumentException, WrongArgumentException, DaoSystemException {
+    public void createTicket(Ticket ticket) throws NullArgumentException, WrongArgumentException, DaoSystemException, AlreadyOccupiedPlaceException {
         this.checkPerson(ticket.getPerson());
         this.checkPlace(ticket.getPlace());
         ValidatorDB.DB.createTicket(ticket.getPlace(), ticket.getPerson());

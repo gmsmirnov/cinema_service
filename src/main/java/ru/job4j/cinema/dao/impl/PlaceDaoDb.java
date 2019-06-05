@@ -4,6 +4,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.job4j.cinema.dao.PlaceDao;
+import ru.job4j.cinema.dao.exception.business.AlreadyOccupiedPlaceException;
 import ru.job4j.cinema.dao.exception.system.DaoSystemException;
 import ru.job4j.cinema.model.Person;
 import ru.job4j.cinema.model.Place;
@@ -22,7 +23,7 @@ import java.util.Properties;
  * Implementation of data access object, working with the place-model for data base.
  *
  * @author Gregory Smirnov (artress@ngs.ru)
- * @version 1.2
+ * @version 1.3
  * @since 29/04/2019
  */
 public class PlaceDaoDb implements PlaceDao {
@@ -319,9 +320,10 @@ public class PlaceDaoDb implements PlaceDao {
      * @param place - the specified place.
      * @param person - the specified person.
      * @throws DaoSystemException if SQL Exception occurs.
+     * @throws AlreadyOccupiedPlaceException if the specified place is busy.
      */
     @Override
-    public void createTicket(Place place, Person person) throws DaoSystemException {
+    public void createTicket(Place place, Person person) throws DaoSystemException, AlreadyOccupiedPlaceException {
         try (Connection connection = PlaceDaoDb.SOURCE.getConnection()) {
             this.updateTables(connection, person, place);
         } catch (SQLException e) {
@@ -337,19 +339,24 @@ public class PlaceDaoDb implements PlaceDao {
      * @param person - the specified person.
      * @param place - the specified place.
      * @throws DaoSystemException if SQL Exception occurs.
+     * @throws AlreadyOccupiedPlaceException if the specified place is busy.
      */
-    private void updateTables(Connection connection, Person person, Place place) throws DaoSystemException {
+    private void updateTables(Connection connection, Person person, Place place) throws DaoSystemException, AlreadyOccupiedPlaceException {
         try {
             connection.setAutoCommit(false);
-            this.updateHall(connection, place);
-            if (this.checkAccount(person)) {
-                this.updateAccountsTable(connection, person);
+            if (this.isFree(place)) {
+                this.updateHall(connection, place);
+                if (this.checkAccount(person)) {
+                    this.updateAccountsTable(connection, person);
+                } else {
+                    this.addAccount(person);
+                }
+                this.updateTicketsTable(connection, person, place);
+                connection.commit();
+                connection.setAutoCommit(true);
             } else {
-                this.addAccount(person);
+                throw new AlreadyOccupiedPlaceException("The place is already occupied");
             }
-            this.updateTicketsTable(connection, person, place);
-            connection.commit();
-            connection.setAutoCommit(true);
         } catch (SQLException e) {
             try {
                 connection.rollback();
